@@ -1,8 +1,6 @@
 package ticketmaster
 
-import java.util.Date
-
-import org.joda.money.CurrencyUnit
+import org.joda.time.DateTime
 
 case class Event(
   eventId: Long,
@@ -10,9 +8,9 @@ case class Event(
   status: String,
   name: String,
   url: String,
-  eventDate: Date,
-  onSaleDate: Date,
-  preSaleDate: Date,
+  eventDate: DateTime,
+  onSaleDate: DateTime,
+  preSaleDate: DateTime,
   category: String,
   categoryId: Int,
   parentCategory: String,
