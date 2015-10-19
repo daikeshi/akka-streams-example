@@ -16,7 +16,10 @@ libraryDependencies ++= Seq(
   "net.databinder.dispatch" %% "dispatch-json4s-native" % "0.11.2",
   "com.google.protobuf" % "protobuf-java" % "2.5.0",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.2",
-  "org.scalaz" %% "scalaz-core" % "7.1.0"  
+  "org.scalaz" %% "scalaz-core" % "7.1.0" ,
+  "joda-time" % "joda-time"    % "2.8.2",
+  "org.joda"  % "joda-convert" % "1.8.1",
+  "org.joda" % "joda-money" % "0.10.0"
 )
 
 scalacOptions ++= Seq("-feature")

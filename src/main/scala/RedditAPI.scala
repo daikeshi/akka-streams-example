@@ -39,21 +39,6 @@ object RedditAPI {
     }
 }
 
-object SimpleExample {
-  import RedditAPI._
-  import ExecutionContext.Implicits.global
-
-  def run =
-    for {
-      subreddits <- popularSubreddits
-      linklistings <- Future.sequence(subreddits.map(popularLinks))
-      links = linklistings.flatMap(_.links)
-      commentListings <- Future.sequence(links.map(popularComments))
-      comments = commentListings.flatMap(_.comments)
-    } yield comments
-}
-
-
 object LinkListing {
   def fromJson(subreddit: String)(json: JValue) = {
     val x = json.\("data").\("children").children.map(_.\("data").\("id")).collect{ case JString(s) => Link(s, subreddit) }
