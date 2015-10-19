@@ -1,11 +1,9 @@
-import com.pkinsky._
-import dispatch.{Http, url}
-import org.json4s.JsonAST.JString
+package ticketmaster
 
-import scala.collection.immutable.Seq
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.ExecutionContext
+import scala.util.{Failure, Success}
 
-object TicketMasterApi extends App {
+object Api extends App {
   val userAgent= Map("User-Agent" -> "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36")
   val commonReqParaMap = Map(
     "apiKey" -> "17b528e219698770b8e4ab2713c74df6",
@@ -15,13 +13,19 @@ object TicketMasterApi extends App {
   )
 
   import dispatch._
+  import Implicits._
 
   def requestUrl =
     url("http://ticketmaster.productserve.com/v3/event").GET <<? commonReqParaMap ++ Map("currentPage" -> "1") <:< userAgent
 
   def listNewYorkEvent(implicit ec: ExecutionContext) = {
-    for (str <- Http(requestUrl OK as.json4s.Json))
-      println(str)
+    val response = Http(requestUrl OK as.json4s.Json).map{ json =>
+      json.extract[TicketMasterResponse]
+    }
+    response onComplete {
+      case Success(res) => println(res)
+      case Failure(e) => println("An error has occured: " + e.getMessage)
+    }
 
 //    println(page.url)
 //    Http(page OK dispatch.as.xml.Elem).map { xml =>

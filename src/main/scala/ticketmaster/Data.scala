@@ -1,24 +1,25 @@
 package ticketmaster
 
+import java.util.Date
+
 import org.joda.money.CurrencyUnit
-import org.joda.time.DateTime
 
 case class Event(
   eventId: Long,
-  ticketMasterEventId: String,
+  ticketmasterEventId: String,
   status: String,
   name: String,
   url: String,
-  eventDate: DateTime,
-  onSaleDate: DateTime,
-  preSaleDate: DateTime,
+  eventDate: Date,
+  onSaleDate: Date,
+  preSaleDate: Date,
   category: String,
   categoryId: Int,
   parentCategory: String,
   parentCategoryId: Int,
-  minPrice: Double,
-  maxPrice: Double,
-  currency: CurrencyUnit,
+  minPrice: String,
+  maxPrice: String,
+  currency: String,
   description: String,
   artists: List[Artist],
   venue: Venue
@@ -38,7 +39,7 @@ case class Artist(
 
 case class Venue(
   venueId: Long,
-  ticketmasterArtistId: Long,
+  ticketmasterVenueId: Long,
   name: String,
   street: String,
   city: String,
@@ -47,18 +48,18 @@ case class Venue(
   url: String,
   imageUrl: String,
   state: String,
-  longitude: Double,
-  latitude: Double
+  longitude: String,
+  latitude: String
 )
 
 case class ResultSetDetails(
   totalResults: Int,
-  totalPage: Int,
+  totalPages: Int,
   currentPage: Int,
-  resultPerPage: Int
+  resultsPerPage: Int
 )
 
 case class TicketMasterResponse(
-  resultSetDetails: ResultSetDetails,
+  details: ResultSetDetails,
   results: List[Event]
 )

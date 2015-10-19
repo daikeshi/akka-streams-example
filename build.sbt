@@ -2,7 +2,7 @@ name := "akka-reddit-wordcount"
  
 version := "0.1.0 "
  
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.7"
 
 val akkaVersion = "2.3.7"
 
@@ -19,7 +19,8 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.1.0" ,
   "joda-time" % "joda-time"    % "2.8.2",
   "org.joda"  % "joda-convert" % "1.8.1",
-  "org.joda" % "joda-money" % "0.10.0"
+  "org.joda" % "joda-money" % "0.10.0",
+  "org.json4s" %% "json4s-ext" % "3.3.0"
 )
 
 scalacOptions ++= Seq("-feature")
