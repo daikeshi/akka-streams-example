@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 case class Event(
   eventId: Long,
   ticketMasterEventId: String,
+  status: String,
   name: String,
   url: String,
   eventDate: DateTime,
@@ -14,7 +15,7 @@ case class Event(
   category: String,
   categoryId: Int,
   parentCategory: String,
-  parentCategoryId,
+  parentCategoryId: Int,
   minPrice: Double,
   maxPrice: Double,
   currency: CurrencyUnit,
@@ -48,4 +49,16 @@ case class Venue(
   state: String,
   longitude: Double,
   latitude: Double
+)
+
+case class ResultSetDetails(
+  totalResults: Int,
+  totalPage: Int,
+  currentPage: Int,
+  resultPerPage: Int
+)
+
+case class TicketMasterResponse(
+  resultSetDetails: ResultSetDetails,
+  results: List[Event]
 )
