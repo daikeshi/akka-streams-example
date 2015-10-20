@@ -2,7 +2,7 @@ package ticketmaster
 
 import org.joda.time.DateTime
 
-case class Event(
+case class TicketmasterEvent(
   eventId: Long,
   ticketmasterEventId: String,
   status: String,
@@ -19,11 +19,11 @@ case class Event(
   maxPrice: String,
   currency: String,
   description: String,
-  artists: List[Artist],
-  venue: Venue
+  artists: List[TicketmasterArtist],
+  venue: TicketmasterVenue
 )
 
-case class Artist(
+case class TicketmasterArtist(
   artistId: Long,
   ticketmasterArtistId: Long,
   name: String,
@@ -35,7 +35,7 @@ case class Artist(
   parentCategoryId: Int
 )
 
-case class Venue(
+case class TicketmasterVenue(
   venueId: Long,
   ticketmasterVenueId: Long,
   name: String,
@@ -50,14 +50,14 @@ case class Venue(
   latitude: String
 )
 
-case class ResultSetDetails(
+case class TicketmasterResultDetails(
   totalResults: Int,
   totalPages: Int,
   currentPage: Int,
   resultsPerPage: Int
 )
 
-case class TicketMasterResponse(
-  details: ResultSetDetails,
-  results: List[Event]
+case class TicketmasterResponse(
+  details: TicketmasterResultDetails,
+  results: List[TicketmasterEvent]
 )
