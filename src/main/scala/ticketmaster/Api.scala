@@ -6,7 +6,9 @@ import dispatch._
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext
-import scala.util.{Success, Failure}
+import scala.util.{Failure, Success}
+import scalikejdbc._
+import scalikejdbc.config._
 
 object TicketmasterConstant {
   final val header= Map(
@@ -30,6 +32,7 @@ object Api {
 
   val logger = LoggerFactory.getLogger(getClass)
   val h = new Http
+  DBs.setupAll()
 
   def buildParameterMap(parameters: Map[String, String]) = commonReqParaMap ++ parameters
 
@@ -46,6 +49,19 @@ object Api {
     Http(request OK as.json4s.Json).map(json ⇒ json.extract[TicketmasterResponse])
   }
 
+  def writeResults(fileName: String, results: List[TicketmasterEvent]) = {
+    val pw = new PrintWriter(new File(fileName))
+    pw.write(results.mkString("\n"))
+    pw.close()
+  }
+
+  def insertResults(results: List[TicketmasterEvent]) = {
+//    results.foreach { event =>
+//      SQL(s"insert ticketmaster_event " +
+//        s"(${columnsToInsert.mkString(", ")}) values ($parameters)").batch(batchData: _*).apply()
+//    }
+  }
+
   def main(args: Array[String]) = {
     implicit val ec = ExecutionContext.Implicits.global
 
@@ -60,9 +76,7 @@ object Api {
         case Success(res) => {
           val results = res.results
           logger.info(s"retrieved ${results.length} events from ticketmaster")
-          val pw = new PrintWriter(new File(s"events/$curPage"))
-          pw.write(results.mkString("\n"))
-          pw.close()
+          writeResults(s"events/$curPage", results)
         }
         case Failure(e) => {
           logger.error(s"${e.getStackTrace.mkString("\n")}\n${e.getMessage}")
