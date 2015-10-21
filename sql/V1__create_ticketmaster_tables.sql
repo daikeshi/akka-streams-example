@@ -10,15 +10,13 @@ create table ticketmaster_event(
   category varchar(512),
   category_id int,
   parent_category varchar(512),
-  parent_categoryid int,
+  parent_category_id int,
   min_price numeric(16, 2),
   max_price numeric(16, 2),
   currency varchar(10),
   description text,
-  created_at timestamp default current_timestamp,
   updated_at timestamp default current_timestamp
 );
-
 
 create table ticketmaster_artist(
   artist_id bigint not null primary key,

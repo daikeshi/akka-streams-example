@@ -49,17 +49,23 @@ object Api {
     Http(request OK as.json4s.Json).map(json ⇒ json.extract[TicketmasterResponse])
   }
 
-  def writeResults(fileName: String, results: List[TicketmasterEvent]) = {
+  def writeResults(fileName: String, results: List[TicketmasterEventRecord]) = {
     val pw = new PrintWriter(new File(fileName))
     pw.write(results.mkString("\n"))
     pw.close()
   }
 
-  def insertResults(results: List[TicketmasterEvent]) = {
-//    results.foreach { event =>
+  def insertResults(results: List[TicketmasterEventRecord]) = {
+    results.foreach { record =>
+      val event = record.event
+      val artists = record.artists
+      val venue = record.venue
+
+
+
 //      SQL(s"insert ticketmaster_event " +
 //        s"(${columnsToInsert.mkString(", ")}) values ($parameters)").batch(batchData: _*).apply()
-//    }
+    }
   }
 
   def main(args: Array[String]) = {

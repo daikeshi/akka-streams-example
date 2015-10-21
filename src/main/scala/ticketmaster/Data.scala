@@ -1,6 +1,25 @@
 package ticketmaster
 
 import org.joda.time.DateTime
+import scalikejdbc._
+
+case class TicketmasterResponse(
+  details: TicketmasterResultDetails,
+  results: List[TicketmasterEventRecord]
+)
+
+case class TicketmasterResultDetails(
+  totalResults: Int,
+  totalPages: Int,
+  currentPage: Int,
+  resultsPerPage: Int
+)
+
+case class TicketmasterEventRecord(
+  event: TicketmasterEvent,
+  artists: List[TicketmasterArtist],
+  venue: TicketmasterVenue
+)
 
 case class TicketmasterEvent(
   eventId: Long,
@@ -18,10 +37,35 @@ case class TicketmasterEvent(
   minPrice: String,
   maxPrice: String,
   currency: String,
-  description: String,
-  artists: List[TicketmasterArtist],
-  venue: TicketmasterVenue
+  description: String
 )
+
+object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
+  override val schemaName = Some("public")
+  override val tableName = "ticketmaster_event"
+  override val columns = Seq("event_id", "ticketmaster_event_id", "status", "name", "url", "event_date",
+    "onsale_date", "presale_date", "category", "category_id", "parent_category", "parent_category_id",
+    "min_price", "max_price", "currency", "description", "created_at", "updated_at")
+  def apply(r: ResultName[TicketmasterEvent])(rs: WrappedResultSet) =
+    TicketmasterEvent(
+      rs.long(r.eventId),
+      rs.string(r.ticketmasterEventId),
+      rs.string(r.status),
+      rs.string(r.name),
+      rs.string(r.url),
+      rs.get(r.eventDate),
+      rs.get(r.onSaleDate),
+      rs.get(r.preSaleDate),
+      rs.string(r.category),
+      rs.int(r.categoryId),
+      rs.string(r.parentCategory),
+      rs.int(r.parentCategoryId),
+      rs.string(r.minPrice),
+      rs.string(r.maxPrice),
+      rs.string(r.currency),
+      rs.string(r.description)
+    )
+}
 
 case class TicketmasterArtist(
   artistId: Long,
@@ -48,16 +92,4 @@ case class TicketmasterVenue(
   state: String,
   longitude: String,
   latitude: String
-)
-
-case class TicketmasterResultDetails(
-  totalResults: Int,
-  totalPages: Int,
-  currentPage: Int,
-  resultsPerPage: Int
-)
-
-case class TicketmasterResponse(
-  details: TicketmasterResultDetails,
-  results: List[TicketmasterEvent]
 )
