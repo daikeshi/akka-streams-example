@@ -1,6 +1,9 @@
 package ticketmaster
 
+import java.io.{File, PrintWriter}
+
 import dispatch._
+import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Success, Failure}
@@ -25,6 +28,9 @@ object Api {
   import ticketmaster.Implicits._
   import ticketmaster.TicketmasterConstant._
 
+  val logger = LoggerFactory.getLogger(getClass)
+  val h = new Http
+
   def buildParameterMap(parameters: Map[String, String]) = commonReqParaMap ++ parameters
 
   def buildRequest(parameters: Map[String, String], header: Map[String, String]): Req = {
@@ -36,27 +42,32 @@ object Api {
     header
   )
 
-  def queryTicketmaster(): Unit = {
-    implicit val ec = ExecutionContext.Implicits.global
-
-    val request = buildRequest(1, 10)
-    val response = Http(request OK as.json4s.Json).map(json ⇒ json.extract[TicketmasterResponse])
-
-    response onComplete {
-      case Success(res) => {
-        val results = res.results
-        //logging to
-        println(results)
-      }
-      case Failure(e) => {
-        println("An error has occurred: " + e.getMessage)
-      }
-    }
-//    val results = response().results
-//    println(results)
+  def queryTicketmaster(request: Req)(implicit ec: ExecutionContext): Future[TicketmasterResponse] = {
+    Http(request OK as.json4s.Json).map(json ⇒ json.extract[TicketmasterResponse])
   }
 
   def main(args: Array[String]) = {
-    queryTicketmaster()
+    implicit val ec = ExecutionContext.Implicits.global
+
+    var response = queryTicketmaster(buildRequest(1, 1))
+    val resultDetails = response().details
+    val eventNum = resultDetails.totalResults
+    logger.info(s"total of $eventNum events to retrieve")
+    val pages = math.ceil(eventNum / 100.0).toInt
+    Range(1, pages+1).foreach { curPage =>
+      response = queryTicketmaster(buildRequest(curPage, 100))
+      response onComplete {
+        case Success(res) => {
+          val results = res.results
+          logger.info(s"retrieved ${results.length} events from ticketmaster")
+          val pw = new PrintWriter(new File(s"events/$curPage"))
+          pw.write(results.mkString("\n"))
+          pw.close()
+        }
+        case Failure(e) => {
+          logger.error(s"${e.getStackTrace.mkString("\n")}\n${e.getMessage}")
+        }
+      }
+    }
   }
 }

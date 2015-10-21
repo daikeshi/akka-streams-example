@@ -11,6 +11,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
   "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
   "com.typesafe.akka" %% "akka-agent" % akkaVersion,
+  "ch.qos.logback" % "logback-classic" % "1.1.3",
   "net.databinder.dispatch" %% "dispatch-core" % "0.11.2",
   "net.databinder.dispatch" %% "dispatch-json4s-native" % "0.11.2",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.2",
