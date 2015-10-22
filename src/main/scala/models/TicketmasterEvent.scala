@@ -129,6 +129,7 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
         entity.description
       )
     }.update.apply()
+    entity
   }
 
   def batchInsert(entities: Seq[TicketmasterEvent])(implicit session: DBSession = autoSession): Seq[Int] = {
