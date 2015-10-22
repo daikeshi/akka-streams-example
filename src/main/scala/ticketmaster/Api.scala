@@ -3,6 +3,7 @@ package ticketmaster
 import java.io.{File, PrintWriter}
 
 import dispatch._
+import models.{TicketmasterEventRecord, TicketmasterResponse}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext

@@ -6,6 +6,8 @@ scalaVersion := "2.11.7"
 
 val akkaVersion = "2.3.7"
 
+scalikejdbcSettings
+
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
