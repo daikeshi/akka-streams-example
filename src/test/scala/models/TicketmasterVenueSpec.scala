@@ -36,10 +36,10 @@ class TicketmasterVenueSpec extends Specification {
       val count = TicketmasterVenue.countBy(sqls.eq(tv.venueId, 1L))
       count should be_>(0L)
     }
-    "create new record" in new AutoRollback {
-      val created = TicketmasterVenue.create(venueId = 1L, ticketmasterVenueId = 1L, name = "MyString")
-      created should not beNull
-    }
+//    "create new record" in new AutoRollback {
+//      val created = TicketmasterVenue.create(venueId = 1L, ticketmasterVenueId = 1L, name = "MyString")
+//      created should not beNull
+//    }
     "save a record" in new AutoRollback {
       val entity = TicketmasterVenue.findAll().head
       // TODO modify something

@@ -14,10 +14,8 @@ case class TicketmasterVenue(
   url: String,
   imageUrl: String,
   state: String,
-  longitude: Double,
-  latitude: Double,
-  createdAt: DateTime,
-  updatedAt: DateTime) {
+  longitude: String,
+  latitude: String) {
 
   def save()(implicit session: DBSession = TicketmasterVenue.autoSession): TicketmasterVenue = TicketmasterVenue.save(this)(session)
 
@@ -46,9 +44,7 @@ object TicketmasterVenue extends SQLSyntaxSupport[TicketmasterVenue] {
     imageUrl = rs.get(tv.imageUrl),
     state = rs.get(tv.state),
     longitude = rs.get(tv.longitude),
-    latitude = rs.get(tv.latitude),
-    createdAt = rs.get(tv.createdAt),
-    updatedAt = rs.get(tv.updatedAt)
+    latitude = rs.get(tv.latitude)
   )
 
   val tv = TicketmasterVenue.syntax("tv")
@@ -101,9 +97,7 @@ object TicketmasterVenue extends SQLSyntaxSupport[TicketmasterVenue] {
         'imageUrl -> entity.imageUrl,
         'state -> entity.state,
         'longitude -> entity.longitude,
-        'latitude -> entity.latitude,
-        'createdAt -> entity.createdAt,
-        'updatedAt -> entity.updatedAt))
+        'latitude -> entity.latitude))
         SQL("""insert into ticketmaster_venue(
         venue_id,
         ticketmaster_venue_id,
@@ -131,9 +125,7 @@ object TicketmasterVenue extends SQLSyntaxSupport[TicketmasterVenue] {
         {imageUrl},
         {state},
         {longitude},
-        {latitude},
-        {createdAt},
-        {updatedAt}
+        {latitude}
       )""").batchByName(params: _*).apply()
     }
 
@@ -151,9 +143,7 @@ object TicketmasterVenue extends SQLSyntaxSupport[TicketmasterVenue] {
         column.imageUrl -> entity.imageUrl,
         column.state -> entity.state,
         column.longitude -> entity.longitude,
-        column.latitude -> entity.latitude,
-        column.createdAt -> entity.createdAt,
-        column.updatedAt -> entity.updatedAt
+        column.latitude -> entity.latitude
       ).where.eq(column.venueId, entity.venueId)
     }.update.apply()
     entity

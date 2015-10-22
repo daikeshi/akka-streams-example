@@ -3,7 +3,7 @@ package ticketmaster
 import java.io.{File, PrintWriter}
 
 import dispatch._
-import models.{TicketmasterEventRecord, TicketmasterResponse}
+import models.{TicketmasterEvent, TicketmasterEventRecord, TicketmasterResponse}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext
@@ -47,7 +47,10 @@ object Api {
   )
 
   def queryTicketmaster(request: Req)(implicit ec: ExecutionContext): Future[TicketmasterResponse] = {
-    Http(request OK as.json4s.Json).map(json ⇒ json.extract[TicketmasterResponse])
+    Http(request OK as.json4s.Json).map { json ⇒
+      println(json)
+      json.extract[TicketmasterResponse]
+    }
   }
 
   def writeResults(fileName: String, results: List[TicketmasterEventRecord]) = {
@@ -58,12 +61,12 @@ object Api {
 
   def insertResults(results: List[TicketmasterEventRecord]) = {
     results.foreach { record =>
+
       val event = record.event
       val artists = record.artists
       val venue = record.venue
 
-
-
+      TicketmasterEvent.create(event)
 //      SQL(s"insert ticketmaster_event " +
 //        s"(${columnsToInsert.mkString(", ")}) values ($parameters)").batch(batchData: _*).apply()
     }
@@ -83,7 +86,8 @@ object Api {
         case Success(res) => {
           val results = res.results
           logger.info(s"retrieved ${results.length} events from ticketmaster")
-          writeResults(s"events/$curPage", results)
+//          writeResults(s"events/$curPage", results)
+          insertResults(results)
         }
         case Failure(e) => {
           logger.error(s"${e.getStackTrace.mkString("\n")}\n${e.getMessage}")

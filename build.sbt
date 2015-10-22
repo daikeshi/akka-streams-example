@@ -8,6 +8,8 @@ val akkaVersion = "2.3.7"
 
 scalikejdbcSettings
 
+scalacOptions in Test ++= Seq("-Yrangepos")
+
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
@@ -23,7 +25,9 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time"    % "2.8.2",
   "org.joda"  % "joda-convert" % "1.8.1",
   "org.joda" % "joda-money" % "0.10.0",
-  "org.json4s" %% "json4s-ext" % "3.3.0"
+  "org.json4s" %% "json4s-ext" % "3.3.0",
+  "org.specs2" %% "specs2-core" % "3.6.5" % "test",
+  "org.scalikejdbc" %% "scalikejdbc-test" % "2.2.9" % "test"
 )
 
 scalacOptions ++= Seq("-feature")

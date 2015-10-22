@@ -9,19 +9,17 @@ case class TicketmasterEvent(
   status: String,
   name: String,
   url: String,
-  eventDate: DateTime,
-  onsaleDate: DateTime,
-  presaleDate: DateTime,
+  eventDate: Option[DateTime] = None,
+  onsaleDate: Option[DateTime] = None,
+  presaleDate: Option[DateTime] = None,
   category: String,
   categoryId: Int,
   parentCategory: String,
-  parentCategoryid: Int,
-  minPrice: BigDecimal,
-  maxPrice: BigDecimal,
+  parentCategoryId: Int,
+  minPrice: String,
+  maxPrice: String,
   currency: String,
-  description: String,
-  createdAt: DateTime,
-  updatedAt: DateTime) {
+  description: String) {
 
   def save()(implicit session: DBSession = TicketmasterEvent.autoSession): TicketmasterEvent = TicketmasterEvent.save(this)(session)
 
@@ -35,7 +33,7 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
 
   override val tableName = "ticketmaster_event"
 
-  override val columns = Seq("event_id", "ticketmaster_event_id", "status", "name", "url", "event_date", "onsale_date", "presale_date", "category", "category_id", "parent_category", "parent_categoryid", "min_price", "max_price", "currency", "description", "created_at", "updated_at")
+  override val columns = Seq("event_id", "ticketmaster_event_id", "status", "name", "url", "event_date", "onsale_date", "presale_date", "category", "category_id", "parent_category", "parent_category_id", "min_price", "max_price", "currency", "description", "created_at", "updated_at")
 
   def apply(te: SyntaxProvider[TicketmasterEvent])(rs: WrappedResultSet): TicketmasterEvent = apply(te.resultName)(rs)
   def apply(te: ResultName[TicketmasterEvent])(rs: WrappedResultSet): TicketmasterEvent = new TicketmasterEvent(
@@ -50,13 +48,11 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
     category = rs.get(te.category),
     categoryId = rs.get(te.categoryId),
     parentCategory = rs.get(te.parentCategory),
-    parentCategoryid = rs.get(te.parentCategoryid),
+    parentCategoryId = rs.get(te.parentCategoryId),
     minPrice = rs.get(te.minPrice),
     maxPrice = rs.get(te.maxPrice),
     currency = rs.get(te.currency),
-    description = rs.get(te.description),
-    createdAt = rs.get(te.createdAt),
-    updatedAt = rs.get(te.updatedAt)
+    description = rs.get(te.description)
   )
 
   val te = TicketmasterEvent.syntax("te")
@@ -95,6 +91,46 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
     }.map(_.long(1)).single.apply().get
   }
 
+  def create(entity: TicketmasterEvent)(implicit session: DBSession = autoSession): TicketmasterEvent = {
+    withSQL {
+      insert.into(TicketmasterEvent).columns(
+        column.eventId,
+        column.ticketmasterEventId,
+        column.status,
+        column.name,
+        column.url,
+        column.eventDate,
+        column.onsaleDate,
+        column.presaleDate,
+        column.category,
+        column.categoryId,
+        column.parentCategory,
+        column.parentCategoryId,
+        column.minPrice,
+        column.maxPrice,
+        column.currency,
+        column.description
+      ).values(
+        entity.eventId,
+        entity.ticketmasterEventId,
+        entity.status,
+        entity.name,
+        entity.url,
+        entity.eventDate,
+        entity.onsaleDate,
+        entity.presaleDate,
+        entity.category,
+        entity.categoryId,
+        entity.parentCategory,
+        entity.parentCategoryId,
+        entity.minPrice,
+        entity.maxPrice,
+        entity.currency,
+        entity.description
+      )
+    }.update.apply()
+  }
+
   def batchInsert(entities: Seq[TicketmasterEvent])(implicit session: DBSession = autoSession): Seq[Int] = {
     val params: Seq[Seq[(Symbol, Any)]] = entities.map(entity => 
       Seq(
@@ -109,13 +145,11 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
         'category -> entity.category,
         'categoryId -> entity.categoryId,
         'parentCategory -> entity.parentCategory,
-        'parentCategoryid -> entity.parentCategoryid,
+        'parentCategoryId -> entity.parentCategoryId,
         'minPrice -> entity.minPrice,
         'maxPrice -> entity.maxPrice,
         'currency -> entity.currency,
-        'description -> entity.description,
-        'createdAt -> entity.createdAt,
-        'updatedAt -> entity.updatedAt))
+        'description -> entity.description))
         SQL("""insert into ticketmaster_event(
         event_id,
         ticketmaster_event_id,
@@ -128,13 +162,11 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
         category,
         category_id,
         parent_category,
-        parent_categoryid,
+        parent_category_id,
         min_price,
         max_price,
         currency,
-        description,
-        created_at,
-        updated_at
+        description
       ) values (
         {eventId},
         {ticketmasterEventId},
@@ -147,13 +179,11 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
         {category},
         {categoryId},
         {parentCategory},
-        {parentCategoryid},
+        {parentCategoryId},
         {minPrice},
         {maxPrice},
         {currency},
-        {description},
-        {createdAt},
-        {updatedAt}
+        {description}
       )""").batchByName(params: _*).apply()
     }
 
@@ -171,13 +201,11 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
         column.category -> entity.category,
         column.categoryId -> entity.categoryId,
         column.parentCategory -> entity.parentCategory,
-        column.parentCategoryid -> entity.parentCategoryid,
+        column.parentCategoryId -> entity.parentCategoryId,
         column.minPrice -> entity.minPrice,
         column.maxPrice -> entity.maxPrice,
         column.currency -> entity.currency,
-        column.description -> entity.description,
-        column.createdAt -> entity.createdAt,
-        column.updatedAt -> entity.updatedAt
+        column.description -> entity.description
       ).where.eq(column.eventId, entity.eventId)
     }.update.apply()
     entity

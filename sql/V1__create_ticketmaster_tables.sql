@@ -11,8 +11,8 @@ create table ticketmaster_event(
   category_id int,
   parent_category varchar(512),
   parent_category_id int,
-  min_price numeric(16, 2),
-  max_price numeric(16, 2),
+  min_price varchar(20),
+  max_price varchar(20),
   currency varchar(10),
   description text,
   updated_at timestamp default current_timestamp

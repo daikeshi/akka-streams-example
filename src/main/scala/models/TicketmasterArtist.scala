@@ -12,9 +12,7 @@ case class TicketmasterArtist(
   category: String,
   categoryId: Int,
   parentCategory: String,
-  parentCategoryId: Int,
-  createdAt: DateTime,
-  updatedAt: DateTime) {
+  parentCategoryId: Int) {
 
   def save()(implicit session: DBSession = TicketmasterArtist.autoSession): TicketmasterArtist = TicketmasterArtist.save(this)(session)
 
@@ -38,9 +36,7 @@ object TicketmasterArtist extends SQLSyntaxSupport[TicketmasterArtist] {
     category = rs.get(ta.category),
     categoryId = rs.get(ta.categoryId),
     parentCategory = rs.get(ta.parentCategory),
-    parentCategoryId = rs.get(ta.parentCategoryId),
-    createdAt = rs.get(ta.createdAt),
-    updatedAt = rs.get(ta.updatedAt)
+    parentCategoryId = rs.get(ta.parentCategoryId)
   )
 
   val ta = TicketmasterArtist.syntax("ta")
@@ -90,9 +86,7 @@ object TicketmasterArtist extends SQLSyntaxSupport[TicketmasterArtist] {
         'category -> entity.category,
         'categoryId -> entity.categoryId,
         'parentCategory -> entity.parentCategory,
-        'parentCategoryId -> entity.parentCategoryId,
-        'createdAt -> entity.createdAt,
-        'updatedAt -> entity.updatedAt))
+        'parentCategoryId -> entity.parentCategoryId))
         SQL("""insert into ticketmaster_artist(
         artist_id,
         ticketmaster_artist_id,
@@ -114,9 +108,7 @@ object TicketmasterArtist extends SQLSyntaxSupport[TicketmasterArtist] {
         {category},
         {categoryId},
         {parentCategory},
-        {parentCategoryId},
-        {createdAt},
-        {updatedAt}
+        {parentCategoryId}
       )""").batchByName(params: _*).apply()
     }
 
@@ -131,9 +123,7 @@ object TicketmasterArtist extends SQLSyntaxSupport[TicketmasterArtist] {
         column.category -> entity.category,
         column.categoryId -> entity.categoryId,
         column.parentCategory -> entity.parentCategory,
-        column.parentCategoryId -> entity.parentCategoryId,
-        column.createdAt -> entity.createdAt,
-        column.updatedAt -> entity.updatedAt
+        column.parentCategoryId -> entity.parentCategoryId
       ).where.eq(column.artistId, entity.artistId)
     }.update.apply()
     entity
