@@ -6,27 +6,26 @@ import org.joda.time.{DateTime}
 case class TicketmasterEvent(
   eventId: Long,
   ticketmasterEventId: String,
-  status: Option[String] = None,
+  status: String,
   name: String,
-  url: Option[String] = None,
+  url: String,
   eventDate: DateTime,
-  onsaleDate: Option[DateTime] = None,
-  presaleDate: Option[DateTime] = None,
-  category: Option[String] = None,
-  categoryId: Option[Int] = None,
-  parentCategory: Option[String] = None,
-  parentCategoryid: Option[Int] = None,
-  minPrice: Option[BigDecimal] = None,
-  maxPrice: Option[BigDecimal] = None,
-  currency: Option[String] = None,
-  description: Option[String] = None,
-  createdAt: Option[DateTime] = None,
-  updatedAt: Option[DateTime] = None) {
+  onsaleDate: DateTime,
+  presaleDate: DateTime,
+  category: String,
+  categoryId: Int,
+  parentCategory: String,
+  parentCategoryid: Int,
+  minPrice: BigDecimal,
+  maxPrice: BigDecimal,
+  currency: String,
+  description: String,
+  createdAt: DateTime,
+  updatedAt: DateTime) {
 
   def save()(implicit session: DBSession = TicketmasterEvent.autoSession): TicketmasterEvent = TicketmasterEvent.save(this)(session)
 
   def destroy()(implicit session: DBSession = TicketmasterEvent.autoSession): Unit = TicketmasterEvent.destroy(this)(session)
-
 }
 
 
@@ -94,88 +93,6 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
     withSQL {
       select(sqls.count).from(TicketmasterEvent as te).where.append(where)
     }.map(_.long(1)).single.apply().get
-  }
-
-  def create(
-    eventId: Long,
-    ticketmasterEventId: String,
-    status: Option[String] = None,
-    name: String,
-    url: Option[String] = None,
-    eventDate: DateTime,
-    onsaleDate: Option[DateTime] = None,
-    presaleDate: Option[DateTime] = None,
-    category: Option[String] = None,
-    categoryId: Option[Int] = None,
-    parentCategory: Option[String] = None,
-    parentCategoryid: Option[Int] = None,
-    minPrice: Option[BigDecimal] = None,
-    maxPrice: Option[BigDecimal] = None,
-    currency: Option[String] = None,
-    description: Option[String] = None,
-    createdAt: Option[DateTime] = None,
-    updatedAt: Option[DateTime] = None)(implicit session: DBSession = autoSession): TicketmasterEvent = {
-    withSQL {
-      insert.into(TicketmasterEvent).columns(
-        column.eventId,
-        column.ticketmasterEventId,
-        column.status,
-        column.name,
-        column.url,
-        column.eventDate,
-        column.onsaleDate,
-        column.presaleDate,
-        column.category,
-        column.categoryId,
-        column.parentCategory,
-        column.parentCategoryid,
-        column.minPrice,
-        column.maxPrice,
-        column.currency,
-        column.description,
-        column.createdAt,
-        column.updatedAt
-      ).values(
-        eventId,
-        ticketmasterEventId,
-        status,
-        name,
-        url,
-        eventDate,
-        onsaleDate,
-        presaleDate,
-        category,
-        categoryId,
-        parentCategory,
-        parentCategoryid,
-        minPrice,
-        maxPrice,
-        currency,
-        description,
-        createdAt,
-        updatedAt
-      )
-    }.update.apply()
-
-    TicketmasterEvent(
-      eventId = eventId,
-      ticketmasterEventId = ticketmasterEventId,
-      status = status,
-      name = name,
-      url = url,
-      eventDate = eventDate,
-      onsaleDate = onsaleDate,
-      presaleDate = presaleDate,
-      category = category,
-      categoryId = categoryId,
-      parentCategory = parentCategory,
-      parentCategoryid = parentCategoryid,
-      minPrice = minPrice,
-      maxPrice = maxPrice,
-      currency = currency,
-      description = description,
-      createdAt = createdAt,
-      updatedAt = updatedAt)
   }
 
   def batchInsert(entities: Seq[TicketmasterEvent])(implicit session: DBSession = autoSession): Seq[Int] = {

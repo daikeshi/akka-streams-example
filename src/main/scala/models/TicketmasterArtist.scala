@@ -1,30 +1,27 @@
 package models
 
 import scalikejdbc._
-import org.joda.time.{DateTime}
+import org.joda.time.DateTime
 
 case class TicketmasterArtist(
   artistId: Long,
   ticketmasterArtistId: Long,
   name: String,
-  url: Option[String] = None,
-  imageUrl: Option[String] = None,
-  category: Option[String] = None,
-  categoryId: Option[Int] = None,
-  parentCategory: Option[String] = None,
-  parentCategoryId: Option[Int] = None,
-  createdAt: Option[DateTime] = None,
-  updatedAt: Option[DateTime] = None) {
+  url: String,
+  imageUrl: String,
+  category: String,
+  categoryId: Int,
+  parentCategory: String,
+  parentCategoryId: Int,
+  createdAt: DateTime,
+  updatedAt: DateTime) {
 
   def save()(implicit session: DBSession = TicketmasterArtist.autoSession): TicketmasterArtist = TicketmasterArtist.save(this)(session)
 
   def destroy()(implicit session: DBSession = TicketmasterArtist.autoSession): Unit = TicketmasterArtist.destroy(this)(session)
-
 }
 
-
 object TicketmasterArtist extends SQLSyntaxSupport[TicketmasterArtist] {
-
   override val schemaName = Some("public")
 
   override val tableName = "ticketmaster_artist"
@@ -80,60 +77,6 @@ object TicketmasterArtist extends SQLSyntaxSupport[TicketmasterArtist] {
     withSQL {
       select(sqls.count).from(TicketmasterArtist as ta).where.append(where)
     }.map(_.long(1)).single.apply().get
-  }
-
-  def create(
-    artistId: Long,
-    ticketmasterArtistId: Long,
-    name: String,
-    url: Option[String] = None,
-    imageUrl: Option[String] = None,
-    category: Option[String] = None,
-    categoryId: Option[Int] = None,
-    parentCategory: Option[String] = None,
-    parentCategoryId: Option[Int] = None,
-    createdAt: Option[DateTime] = None,
-    updatedAt: Option[DateTime] = None)(implicit session: DBSession = autoSession): TicketmasterArtist = {
-    withSQL {
-      insert.into(TicketmasterArtist).columns(
-        column.artistId,
-        column.ticketmasterArtistId,
-        column.name,
-        column.url,
-        column.imageUrl,
-        column.category,
-        column.categoryId,
-        column.parentCategory,
-        column.parentCategoryId,
-        column.createdAt,
-        column.updatedAt
-      ).values(
-        artistId,
-        ticketmasterArtistId,
-        name,
-        url,
-        imageUrl,
-        category,
-        categoryId,
-        parentCategory,
-        parentCategoryId,
-        createdAt,
-        updatedAt
-      )
-    }.update.apply()
-
-    TicketmasterArtist(
-      artistId = artistId,
-      ticketmasterArtistId = ticketmasterArtistId,
-      name = name,
-      url = url,
-      imageUrl = imageUrl,
-      category = category,
-      categoryId = categoryId,
-      parentCategory = parentCategory,
-      parentCategoryId = parentCategoryId,
-      createdAt = createdAt,
-      updatedAt = updatedAt)
   }
 
   def batchInsert(entities: Seq[TicketmasterArtist])(implicit session: DBSession = autoSession): Seq[Int] = {

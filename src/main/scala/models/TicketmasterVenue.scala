@@ -1,28 +1,27 @@
 package models
 
 import scalikejdbc._
-import org.joda.time.{DateTime}
+import org.joda.time.DateTime
 
 case class TicketmasterVenue(
   venueId: Long,
   ticketmasterVenueId: Long,
   name: String,
-  street: Option[String] = None,
-  city: Option[String] = None,
-  country: Option[String] = None,
-  postcode: Option[String] = None,
-  url: Option[String] = None,
-  imageUrl: Option[String] = None,
-  state: Option[String] = None,
-  longitude: Option[Double] = None,
-  latitude: Option[Double] = None,
-  createdAt: Option[DateTime] = None,
-  updatedAt: Option[DateTime] = None) {
+  street: String,
+  city: String,
+  country: String,
+  postcode: String,
+  url: String,
+  imageUrl: String,
+  state: String,
+  longitude: Double,
+  latitude: Double,
+  createdAt: DateTime,
+  updatedAt: DateTime) {
 
   def save()(implicit session: DBSession = TicketmasterVenue.autoSession): TicketmasterVenue = TicketmasterVenue.save(this)(session)
 
   def destroy()(implicit session: DBSession = TicketmasterVenue.autoSession): Unit = TicketmasterVenue.destroy(this)(session)
-
 }
 
 
@@ -86,72 +85,6 @@ object TicketmasterVenue extends SQLSyntaxSupport[TicketmasterVenue] {
     withSQL {
       select(sqls.count).from(TicketmasterVenue as tv).where.append(where)
     }.map(_.long(1)).single.apply().get
-  }
-
-  def create(
-    venueId: Long,
-    ticketmasterVenueId: Long,
-    name: String,
-    street: Option[String] = None,
-    city: Option[String] = None,
-    country: Option[String] = None,
-    postcode: Option[String] = None,
-    url: Option[String] = None,
-    imageUrl: Option[String] = None,
-    state: Option[String] = None,
-    longitude: Option[Double] = None,
-    latitude: Option[Double] = None,
-    createdAt: Option[DateTime] = None,
-    updatedAt: Option[DateTime] = None)(implicit session: DBSession = autoSession): TicketmasterVenue = {
-    withSQL {
-      insert.into(TicketmasterVenue).columns(
-        column.venueId,
-        column.ticketmasterVenueId,
-        column.name,
-        column.street,
-        column.city,
-        column.country,
-        column.postcode,
-        column.url,
-        column.imageUrl,
-        column.state,
-        column.longitude,
-        column.latitude,
-        column.createdAt,
-        column.updatedAt
-      ).values(
-        venueId,
-        ticketmasterVenueId,
-        name,
-        street,
-        city,
-        country,
-        postcode,
-        url,
-        imageUrl,
-        state,
-        longitude,
-        latitude,
-        createdAt,
-        updatedAt
-      )
-    }.update.apply()
-
-    TicketmasterVenue(
-      venueId = venueId,
-      ticketmasterVenueId = ticketmasterVenueId,
-      name = name,
-      street = street,
-      city = city,
-      country = country,
-      postcode = postcode,
-      url = url,
-      imageUrl = imageUrl,
-      state = state,
-      longitude = longitude,
-      latitude = latitude,
-      createdAt = createdAt,
-      updatedAt = updatedAt)
   }
 
   def batchInsert(entities: Seq[TicketmasterVenue])(implicit session: DBSession = autoSession): Seq[Int] = {
