@@ -75,6 +75,41 @@ object TicketmasterArtist extends SQLSyntaxSupport[TicketmasterArtist] {
     }.map(_.long(1)).single.apply().get
   }
 
+  def create(entity: TicketmasterArtist)(implicit session: DBSession = autoSession): TicketmasterArtist = {
+    withSQL {
+      insert.into(TicketmasterArtist).columns(
+        column.artistId,
+        column.ticketmasterArtistId,
+        column.name,
+        column.url,
+        column.imageUrl,
+        column.category,
+        column.categoryId,
+        column.parentCategory,
+        column.parentCategoryId
+      ).values(
+          entity.artistId,
+          entity.ticketmasterArtistId,
+          entity.name,
+          entity.url,
+          entity.imageUrl,
+          entity.category,
+          entity.categoryId,
+          entity.parentCategory,
+          entity.parentCategoryId
+        )
+    }.update.apply()
+    entity
+  }
+
+  def merge(entity: TicketmasterArtist)(implicit session: DBSession = autoSession): TicketmasterArtist = {
+    val query = s"select merge_ticketmaster_artist(" +
+      s"'${entity.artistId}', '${entity.ticketmasterArtistId}', '${entity.name}', '${entity.url}', " +
+      s"'${entity.category}', '${entity.categoryId}', '${entity.parentCategory}', '${entity.parentCategoryId}'"
+    SQL(query).execute().apply()
+    entity
+  }
+
   def batchInsert(entities: Seq[TicketmasterArtist])(implicit session: DBSession = autoSession): Seq[Int] = {
     val params: Seq[Seq[(Symbol, Any)]] = entities.map(entity => 
       Seq(

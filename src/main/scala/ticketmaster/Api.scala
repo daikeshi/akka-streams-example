@@ -1,6 +1,7 @@
 package ticketmaster
 
 import java.io.{File, PrintWriter}
+import java.sql.SQLException
 
 import dispatch._
 import models.{TicketmasterEvent, TicketmasterEventRecord, TicketmasterResponse}
@@ -20,8 +21,8 @@ object TicketmasterConstant {
   final val commonReqParaMap = Map(
     "apiKey" -> "17b528e219698770b8e4ab2713c74df6",
     "country" -> "US",
-    "filter.venue.state" -> "NY",
-    "filter.venue.city" -> "New York"
+    "filter.venue.state" -> "CT"
+//    "filter.venue.city" -> "New York"
   )
 
   final val baseUrl = "http://ticketmaster.productserve.com/v3/event"
@@ -47,10 +48,7 @@ object Api {
   )
 
   def queryTicketmaster(request: Req)(implicit ec: ExecutionContext): Future[TicketmasterResponse] = {
-    Http(request OK as.json4s.Json).map { json ⇒
-      println(json)
-      json.extract[TicketmasterResponse]
-    }
+    Http(request OK as.json4s.Json).map(json ⇒ json.extract[TicketmasterResponse])
   }
 
   def writeResults(fileName: String, results: List[TicketmasterEventRecord]) = {
@@ -60,15 +58,24 @@ object Api {
   }
 
   def insertResults(results: List[TicketmasterEventRecord]) = {
+//    val events = results.map(_.event)
+//    try {
+//      TicketmasterEvent.batchMerge(events)
+//    } catch {
+//      case e: SQLException ⇒
+//        logger.error(s"${e.getNextException.getStackTraceString}\n${e.getNextException.getMessage}\n${e.getNextException.getErrorCode}")
+//    }
+
     results.foreach { record =>
-
       val event = record.event
-      val artists = record.artists
-      val venue = record.venue
-
-      TicketmasterEvent.create(event)
-//      SQL(s"insert ticketmaster_event " +
-//        s"(${columnsToInsert.mkString(", ")}) values ($parameters)").batch(batchData: _*).apply()
+//      val artists = record.artists
+//      val venue = record.venue
+      try {
+        TicketmasterEvent.merge(event)
+      } catch {
+        case e: Exception ⇒
+          logger.error(s"${e.getMessage}\n${e.getStackTraceString}")
+      }
     }
   }
 

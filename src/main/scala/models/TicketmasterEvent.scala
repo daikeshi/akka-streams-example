@@ -1,7 +1,7 @@
 package models
 
+import org.joda.time.DateTime
 import scalikejdbc._
-import org.joda.time.{DateTime}
 
 case class TicketmasterEvent(
   eventId: Long,
@@ -129,6 +129,19 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
         entity.description
       )
     }.update.apply()
+    entity
+  }
+
+  def merge(entity: TicketmasterEvent)(implicit session: DBSession = autoSession): TicketmasterEvent = {
+    val query = s"select merge_ticketmaster_event(" +
+      s"'${entity.eventId}', '${entity.ticketmasterEventId}', '${entity.status}', '${entity.name}', '${entity.url}', " +
+      s"${if (entity.eventDate.isDefined) s"'${entity.eventDate.get}'" else "null"}," +
+      s"${if (entity.onsaleDate.isDefined) s"'${entity.eventDate.get}'" else "null"}," +
+      s"${if (entity.presaleDate.isDefined) s"'${entity.eventDate.get}'" else "null"}," +
+      s"'${entity.category}', '${entity.categoryId}', '${entity.parentCategory}', '${entity.parentCategoryId}', " +
+      s"'${entity.minPrice}', '${entity.maxPrice}', '${entity.currency}', " +
+      s"'${if (entity.description == null) "" else entity.description}')"
+    SQL(query).execute().apply()
     entity
   }
 
