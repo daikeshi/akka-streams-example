@@ -14,11 +14,11 @@ create table ticketmaster_artist(
 
 create table ticketmaster_event_artist(
   event_id bigint references ticketmaster_event,
-  artist_id bigint references ticketmaster_artist
+  artist_id bigint references ticketmaster_artist,
+  primary key (event_id, artist_id)
 );
 
-drop function if exists merge_ticketmaster_artist(bigint, varchar(255), varchar(512), varchar(1024), varchar(1024), varchar(512), int, varchar(512),  int)
-
+drop function if exists merge_ticketmaster_artist(bigint, varchar(255), varchar(512), varchar(1024), varchar(1024), varchar(512), int, varchar(512),  int);
 create function merge_ticketmaster_artist(
    partist_id bigint,
    pticketmaster_artist_id varchar(255),
@@ -74,7 +74,42 @@ begin
             return;
         exception when unique_violation then
             -- do nothing, and loop to try the update again
-        end
+        end;
+    end loop;
+end;
+$$
+language plpgsql;
+
+drop function if exists merge_ticketmaster_event_artist(bigint, bigint);
+create function merge_ticketmaster_event_artist(
+   pevent_id bigint,
+   partist_id bigint
+  ) returns void as
+$$
+begin
+    loop
+        -- first try to update the key
+        update ticketmaster_event_artist set
+          artist_id = partist_id
+        where event_id = pevent_id and artist_id = partist_id;
+        if found then
+            return;
+        end if;
+        -- not there, so try to insert the key
+        -- if someone else inserts the same key concurrently,
+        -- we could get a unique-key failure
+        begin
+            insert into ticketmaster_event_artist(
+              event_id,
+              artist_id
+            ) values (
+              pevent_id,
+              partist_id
+            );
+            return;
+        exception when unique_violation then
+            -- do nothing, and loop to try the update again
+        end;
     end loop;
 end;
 $$

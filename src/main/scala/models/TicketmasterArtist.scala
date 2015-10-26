@@ -104,8 +104,8 @@ object TicketmasterArtist extends SQLSyntaxSupport[TicketmasterArtist] {
 
   def merge(entity: TicketmasterArtist)(implicit session: DBSession = autoSession): TicketmasterArtist = {
     val query = s"select merge_ticketmaster_artist(" +
-      s"'${entity.artistId}', '${entity.ticketmasterArtistId}', '${entity.name}', '${entity.url}', " +
-      s"'${entity.category}', '${entity.categoryId}', '${entity.parentCategory}', '${entity.parentCategoryId}'"
+      s"'${entity.artistId}', '${entity.ticketmasterArtistId}', '${entity.name}', '${entity.url}', '${entity.imageUrl}', " +
+      s"'${entity.category}', '${entity.categoryId}', '${entity.parentCategory}', '${entity.parentCategoryId}')"
     SQL(query).execute().apply()
     entity
   }

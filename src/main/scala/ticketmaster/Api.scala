@@ -4,7 +4,7 @@ import java.io.{File, PrintWriter}
 import java.sql.SQLException
 
 import dispatch._
-import models.{TicketmasterEvent, TicketmasterEventRecord, TicketmasterResponse}
+import models._
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext
@@ -20,8 +20,8 @@ object TicketmasterConstant {
 
   final val commonReqParaMap = Map(
     "apiKey" -> "17b528e219698770b8e4ab2713c74df6",
-    "country" -> "US",
-    "filter.venue.state" -> "CT"
+    "country" -> "US"
+//    "filter.venue.state" -> "CT"
 //    "filter.venue.city" -> "New York"
   )
 
@@ -42,8 +42,8 @@ object Api {
     url(baseUrl).GET <<? buildParameterMap(parameters) <:< header
   }
 
-  def buildRequest(curPage: Int, resultsPerPage: Int): Req = buildRequest(
-    Map("currentPage" -> curPage.toString, "resultsPerPage" -> resultsPerPage.toString),
+  def buildRequest(state: String, curPage: Int, resultsPerPage: Int): Req = buildRequest(
+    Map("currentPage" -> curPage.toString, "resultsPerPage" -> resultsPerPage.toString, "filter.venue.state" → state),
     header
   )
 
@@ -51,53 +51,51 @@ object Api {
     Http(request OK as.json4s.Json).map(json ⇒ json.extract[TicketmasterResponse])
   }
 
-  def writeResults(fileName: String, results: List[TicketmasterEventRecord]) = {
-    val pw = new PrintWriter(new File(fileName))
-    pw.write(results.mkString("\n"))
-    pw.close()
-  }
-
   def insertResults(results: List[TicketmasterEventRecord]) = {
-//    val events = results.map(_.event)
-//    try {
-//      TicketmasterEvent.batchMerge(events)
-//    } catch {
-//      case e: SQLException ⇒
-//        logger.error(s"${e.getNextException.getStackTraceString}\n${e.getNextException.getMessage}\n${e.getNextException.getErrorCode}")
-//    }
-
+    var failureCounter = 0
     results.foreach { record =>
       val event = record.event
-//      val artists = record.artists
-//      val venue = record.venue
+      val artists = record.artists
+      val venue = record.venue
+
       try {
         TicketmasterEvent.merge(event)
+        artists.foreach { artist ⇒
+          TicketmasterArtist.merge(artist)
+          //TicketmasterEventArtist.merge(event.eventId, artist.artistId)
+        }
+        TicketmasterVenue.merge(venue)
+        //TicketmasterEventVenue.merge(event.eventId, venue.venueId)
       } catch {
         case e: Exception ⇒
+          failureCounter = failureCounter + 1
           logger.error(s"${e.getMessage}\n${e.getStackTraceString}")
       }
     }
+    logger.error(s"There are $failureCounter events failed to insert into database")
   }
 
   def main(args: Array[String]) = {
     implicit val ec = ExecutionContext.Implicits.global
-
-    var response = queryTicketmaster(buildRequest(1, 1))
-    val resultDetails = response().details
-    val eventNum = resultDetails.totalResults
-    logger.info(s"total of $eventNum events to retrieve")
-    val pages = math.ceil(eventNum / 100.0).toInt
-    Range(1, pages+1).foreach { curPage =>
-      response = queryTicketmaster(buildRequest(curPage, 100))
-      response onComplete {
-        case Success(res) => {
-          val results = res.results
-          logger.info(s"retrieved ${results.length} events from ticketmaster")
-//          writeResults(s"events/$curPage", results)
-          insertResults(results)
-        }
-        case Failure(e) => {
-          logger.error(s"${e.getStackTrace.mkString("\n")}\n${e.getMessage}")
+    val states = List("NY", "NJ", "CT")
+    states.foreach { state ⇒
+      var response = queryTicketmaster(buildRequest(state, 1, 1))
+      val resultDetails = response().details
+      val eventNum = resultDetails.totalResults
+      logger.info(s"total of $eventNum events to retrieve")
+      val pages = math.ceil(eventNum / 100.0).toInt
+      Range(1, pages+1).foreach { curPage =>
+        response = queryTicketmaster(buildRequest(state, curPage, 100))
+        response onComplete {
+          case Success(res) => {
+            val results = res.results
+            logger.info(s"retrieved ${results.length} events from ticketmaster")
+            //          writeResults(s"events/$curPage", results)
+            insertResults(results)
+          }
+          case Failure(e) => {
+            logger.error(s"${e.getStackTrace.mkString("\n")}\n${e.getMessage}")
+          }
         }
       }
     }

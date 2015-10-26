@@ -18,8 +18,7 @@ create table ticketmaster_event(
   updated_at timestamp default current_timestamp
 );
 
-drop function if exists merge_ticketmaster_venue(bigint, varchar(255), varchar(20), varchar(1024), varchar(1024), timestamp, timestamp, timestamp, varchar(512), int, varchar(512),  int, varchar(20), varchar(20), varchar(10), text)
-
+drop function if exists merge_ticketmaster_event(bigint, varchar(255), varchar(20), varchar(1024), varchar(1024), timestamp, timestamp, timestamp, varchar(512), int, varchar(512),  int, varchar(20), varchar(20), varchar(10), text);
 create function merge_ticketmaster_event(
    pevent_id bigint,
    pticketmaster_event_id varchar(255),

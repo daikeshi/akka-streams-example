@@ -97,7 +97,7 @@ object TicketmasterVenue extends SQLSyntaxSupport[TicketmasterVenue] {
         column.imageUrl,
         column.state,
         column.longitude,
-        column.latietude
+        column.latitude
       ).values(
           entity.venueId,
           entity.ticketmasterVenueId,
@@ -119,7 +119,9 @@ object TicketmasterVenue extends SQLSyntaxSupport[TicketmasterVenue] {
   def merge(entity: TicketmasterVenue)(implicit session: DBSession = autoSession): TicketmasterVenue = {
     val query = s"select merge_ticketmaster_venue(" +
       s"'${entity.venueId}', '${entity.ticketmasterVenueId}', '${entity.name}', '${entity.street}', '${entity.city}', " +
-      s"'${entity.country}', '${entity.postcode}', '${entity.url}', '${entity.imageUrl}', '${entity.state}', '${entity.longitude}', '${entity.latitude}'"
+      s"'${entity.country}', '${entity.postcode}', '${entity.url}', '${entity.imageUrl}', '${entity.state}', " +
+      s"${if (entity.longitude != null) s"'${entity.longitude}'" else "null"}, " +
+      s"${if (entity.latitude != null) s"'${entity.latitude}'" else "null"})"
     SQL(query).execute().apply()
     entity
   }
