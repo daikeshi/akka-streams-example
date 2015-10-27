@@ -229,4 +229,43 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
     withSQL { delete.from(TicketmasterEvent).where.eq(column.eventId, entity.eventId) }.update.apply()
   }
 
+
+  def addTicketmasterEvent(event: TicketmasterEvent, artists: List[TicketmasterArtist], venue: TicketmasterVenue)
+    (implicit session: DBSession = autoSession): Unit = {
+    val addEvent = List(
+      s"select merge_ticketmaster_event(" +
+      s"'${event.eventId}', '${event.ticketmasterEventId}', '${event.status}', '${event.name}', '${event.url}', " +
+      s"${if (event.eventDate.isDefined) s"'${event.eventDate.get}'" else "null"}," +
+      s"${if (event.onsaleDate.isDefined) s"'${event.eventDate.get}'" else "null"}," +
+      s"${if (event.presaleDate.isDefined) s"'${event.eventDate.get}'" else "null"}," +
+      s"'${event.category}', '${event.categoryId}', '${event.parentCategory}', '${event.parentCategoryId}', " +
+      s"'${event.minPrice}', '${event.maxPrice}', '${event.currency}', " +
+      s"'${if (event.description == null) "" else event.description}')"
+    )
+
+    val addArtists = artists.map { artist ⇒ s"select merge_ticketmaster_artist(" +
+      s"'${artist.artistId}', '${artist.ticketmasterArtistId}', '${artist.name}', '${artist.url}', '${artist.imageUrl}', " +
+      s"'${artist.category}', '${artist.categoryId}', '${artist.parentCategory}', '${artist.parentCategoryId}')"
+    }
+    
+    val addVenue = List(
+      s"select merge_ticketmaster_venue(" +
+      s"'${venue.venueId}', '${venue.ticketmasterVenueId}', '${venue.name}', '${venue.street}', '${venue.city}', " +
+      s"'${venue.country}', '${venue.postcode}', '${venue.url}', '${venue.imageUrl}', '${venue.state}', " +
+      s"${if (venue.longitude != null) s"'${venue.longitude}'" else "null"}, " +
+      s"${if (venue.latitude != null) s"'${venue.latitude}'" else "null"})"
+    )
+
+    val addArtistStream = artists.map { artist ⇒
+      s"select merge_ticketmaster_event_artist('${event.eventId}', '${artist.artistId}')"
+    }
+
+    val addVenueStream = List(s"select merge_ticketmaster_event_venue('${event.eventId}', '${venue.venueId}')")
+
+    NamedDB('default) localTx { implicit session ⇒
+      val sqlStatements = addEvent ++ addArtists ++ addVenue ++ addVenueStream ++ addArtistStream
+      sqlStatements.foreach { sqlStatement ⇒ SQL(sqlStatement).execute().apply() }
+    }
+  }
+
 }

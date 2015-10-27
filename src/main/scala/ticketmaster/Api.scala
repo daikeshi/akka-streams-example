@@ -54,18 +54,8 @@ object Api {
   def insertResults(results: List[TicketmasterEventRecord]) = {
     var failureCounter = 0
     results.foreach { record =>
-      val event = record.event
-      val artists = record.artists
-      val venue = record.venue
-
       try {
-        TicketmasterEvent.merge(event)
-        artists.foreach { artist ⇒
-          TicketmasterArtist.merge(artist)
-          //TicketmasterEventArtist.merge(event.eventId, artist.artistId)
-        }
-        TicketmasterVenue.merge(venue)
-        //TicketmasterEventVenue.merge(event.eventId, venue.venueId)
+        TicketmasterEvent.addTicketmasterEvent(record.event, record.artists, record.venue)
       } catch {
         case e: Exception ⇒
           failureCounter = failureCounter + 1
@@ -90,8 +80,8 @@ object Api {
           case Success(res) => {
             val results = res.results
             logger.info(s"retrieved ${results.length} events from ticketmaster")
-            //          writeResults(s"events/$curPage", results)
             insertResults(results)
+            Thread.sleep(2000)
           }
           case Failure(e) => {
             logger.error(s"${e.getStackTrace.mkString("\n")}\n${e.getMessage}")

@@ -108,7 +108,7 @@ begin
             );
             return;
         exception when unique_violation then
-            -- do nothing, and loop to try the update again
+          -- do nothing, and loop to try the update again
         end;
     end loop;
 end;
