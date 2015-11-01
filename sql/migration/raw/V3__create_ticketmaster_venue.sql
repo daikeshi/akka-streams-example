@@ -18,7 +18,7 @@ create table ticketmaster_venue(
 create table ticketmaster_event_venue(
   event_id bigint references ticketmaster_event,
   venue_id bigint references ticketmaster_venue,
-  primary key (event_id, artist_id)
+  primary key (event_id, venue_id)
 );
 
 drop function if exists merge_ticketmaster_venue(bigint, varchar(255), varchar(512), varchar(1024), varchar(256), varchar(10), varchar(10),  varchar(1024), varchar(1024), varchar(5), float, float);
