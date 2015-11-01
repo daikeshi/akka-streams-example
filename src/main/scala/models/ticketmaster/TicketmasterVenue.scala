@@ -1,7 +1,6 @@
-package models
+package models.ticketmaster
 
 import scalikejdbc._
-import org.joda.time.DateTime
 
 case class TicketmasterVenue(
   venueId: Long,

@@ -1,10 +1,7 @@
-package ticketmaster
-
-import java.io.{File, PrintWriter}
-import java.sql.SQLException
+package api
 
 import dispatch._
-import models._
+import models.ticketmaster.{TicketmasterEvent, TicketmasterEventRecord, TicketmasterResponse}
 import org.slf4j.LoggerFactory
 import scalikejdbc.config._
 
@@ -20,15 +17,13 @@ object TicketmasterConstant {
   final val commonReqParaMap = Map(
     "apiKey" -> "17b528e219698770b8e4ab2713c74df6",
     "country" -> "US"
-//    "filter.venue.state" -> "CT"
-//    "filter.venue.city" -> "New York"
   )
 
   final val baseUrl = "http://ticketmaster.productserve.com/v3/event"
 }
 
 object TicketmasterApi {
-  import ticketmaster.TicketmasterConstant._
+  import TicketmasterConstant._
   import utils.Implicits._
 
   val logger = LoggerFactory.getLogger(getClass)

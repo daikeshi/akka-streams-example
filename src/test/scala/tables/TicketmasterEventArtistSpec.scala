@@ -1,6 +1,6 @@
 package tables
 
-import models.TicketmasterEventArtist
+import models.ticketmaster.TicketmasterEventArtist
 import scalikejdbc.specs2.mutable.AutoRollback
 import org.specs2.mutable._
 import scalikejdbc._

@@ -1,4 +1,4 @@
-package models
+package models.ticketmaster
 
 import org.joda.time.DateTime
 
