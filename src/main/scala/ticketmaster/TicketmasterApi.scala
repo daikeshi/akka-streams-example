@@ -6,11 +6,10 @@ import java.sql.SQLException
 import dispatch._
 import models._
 import org.slf4j.LoggerFactory
+import scalikejdbc.config._
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
-import scalikejdbc._
-import scalikejdbc.config._
 
 object TicketmasterConstant {
   final val header= Map(
@@ -28,9 +27,9 @@ object TicketmasterConstant {
   final val baseUrl = "http://ticketmaster.productserve.com/v3/event"
 }
 
-object Api {
-  import ticketmaster.Implicits._
+object TicketmasterApi {
   import ticketmaster.TicketmasterConstant._
+  import utils.Implicits._
 
   val logger = LoggerFactory.getLogger(getClass)
   val h = new Http
