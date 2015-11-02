@@ -2,39 +2,19 @@ package api
 
 import dispatch._
 import models.ticketmaster.{TicketmasterEvent, TicketmasterEventRecord, TicketmasterResponse}
-import org.slf4j.LoggerFactory
-import scalikejdbc.config._
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
-object TicketmasterConstant {
-  final val header= Map(
-    "User-Agent" -> "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36",
-    "Accept" -> "application/json"
-  )
+object TicketmasterApi extends EventSourceApi {
+  import utils.Implicits._
 
-  final val commonReqParaMap = Map(
+  val commonReqParaMap = Map(
     "apiKey" -> "17b528e219698770b8e4ab2713c74df6",
     "country" -> "US"
   )
 
   final val baseUrl = "http://ticketmaster.productserve.com/v3/event"
-}
-
-object TicketmasterApi {
-  import TicketmasterConstant._
-  import utils.Implicits._
-
-  val logger = LoggerFactory.getLogger(getClass)
-  val h = new Http
-  DBs.setupAll()
-
-  def buildParameterMap(parameters: Map[String, String]) = commonReqParaMap ++ parameters
-
-  def buildRequest(parameters: Map[String, String], header: Map[String, String]): Req = {
-    url(baseUrl).GET <<? buildParameterMap(parameters) <:< header
-  }
 
   def buildRequest(state: String, curPage: Int, resultsPerPage: Int): Req = buildRequest(
     Map("currentPage" -> curPage.toString, "resultsPerPage" -> resultsPerPage.toString, "filter.venue.state" → state),
@@ -53,7 +33,7 @@ object TicketmasterApi {
       } catch {
         case e: Exception ⇒
           failureCounter = failureCounter + 1
-          logger.error(s"${e.getMessage}\n${e.getStackTraceString}")
+          logger.error(s"${e.getMessage}\n${e.getStackTrace.map(_.toString).mkString("\n")}")
       }
     }
     logger.error(s"There are $failureCounter events failed to insert into database")
