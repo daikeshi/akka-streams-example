@@ -4,7 +4,7 @@ import dispatch.{Req, url}
 import org.slf4j.LoggerFactory
 import scalikejdbc.config.DBs
 
-trait EventSourceApi {
+trait SourceApi {
   DBs.setupAll()
 
   val logger = LoggerFactory.getLogger(getClass)

@@ -230,7 +230,7 @@ object TicketmasterEvent extends SQLSyntaxSupport[TicketmasterEvent] {
   }
 
 
-  def addTicketmasterEvent(event: TicketmasterEvent, artists: List[TicketmasterArtist], venue: TicketmasterVenue)
+  def addEvent(event: TicketmasterEvent, artists: List[TicketmasterArtist], venue: TicketmasterVenue)
     (implicit session: DBSession = autoSession): Unit = {
     val addEvent = List(
       s"select merge_ticketmaster_event(" +

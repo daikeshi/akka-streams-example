@@ -6,7 +6,7 @@ import models.ticketmaster.{TicketmasterEvent, TicketmasterEventRecord, Ticketma
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
-object TicketmasterApi extends EventSourceApi {
+object TicketmasterApi extends SourceApi {
   import utils.Implicits._
 
   val commonReqParaMap = Map(
@@ -29,7 +29,7 @@ object TicketmasterApi extends EventSourceApi {
     var failureCounter = 0
     results.foreach { record =>
       try {
-        TicketmasterEvent.addTicketmasterEvent(record.event, record.artists, record.venue)
+        TicketmasterEvent.addEvent(record.event, record.artists, record.venue)
       } catch {
         case e: Exception ⇒
           failureCounter = failureCounter + 1
