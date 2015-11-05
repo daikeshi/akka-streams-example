@@ -13,7 +13,11 @@ case class EventbriteText(text: String, html: String)
 
 case class EventbriteDateTime(timezone: DateTimeZone, local: DateTime, utc: DateTime)
 
-case class EventbriteLogo(id: Long, url: String, aspectRatio: Float, edgeColor, String, edgeColorSet: Boolean)
+case class EventbriteLogo(id: Long, url: String, aspectRatio: Float, edgeColor: String, edgeColorSet: Boolean)
+
+object EventbriteEvent {
+  def addEvent(e: EventbriteEvent) = ???
+}
 
 case class EventbriteEvent(
   name: EventbriteText,

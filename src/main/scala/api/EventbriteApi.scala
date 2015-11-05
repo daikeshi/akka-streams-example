@@ -7,6 +7,8 @@ import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
 object EventbriteApi extends SourceApi {
+  import utils.Implicits._
+
   final val baseUrl = "https://www.eventbriteapi.com/v3"
 
   final val eventSearchUrl = s"$baseUrl/events/search/"
